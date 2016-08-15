@@ -1,0 +1,406 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>添加组织</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="bower_components/jquery-easyui-1.4.5/themes/default/easyui.css" rel="stylesheet" />
+    <link href="bower_components/jquery-easyui-1.4.5/themes/icon.css" rel="stylesheet" />
+    <link href="bower_components/jquery-easyui-1.4.5/themes/color.css" rel="stylesheet" />
+    <script src="bower_components/jquery-easyui-1.4.5/easyloader.js"></script>
+    <script src="bower_components/jquery-easyui-1.4.5/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#categoryId").change(function () {
+                var val = $(this).val();
+                $("#hide_parentId").val("0");
+                $("#parent_text").text("作为顶级节点")
+                $("#name").val("");
+                $("#summary").val("");
+                init_tree(val);
+            })
+
+        })
+        function init_tree(id) {
+            $("#tt").tree({
+                method: "post",
+                animate: true,
+                lines: true,
+                url: "/MyWebProject/api/tree/get_data?category_id=" + id,
+                onClick: function (node) {
+                    $("#parent_text").text(node.text);
+                    $("#hide_parentId").val(node.id);
+                    $("#name").val("");
+                    $("#summary").val("");
+                    $("#select_operator").val("add");
+                    $("#btnSubmit").prop("disabled", false);
+                    $("#btnEdit").prop("disabled", true);
+                },
+                //onDblClick: function (node) {
+                //    $(this).tree('beginEdit', node.target);
+                //},
+                //onAfterEdit: function (node) {
+                //    alert(node.id + " " + node.text);
+                //}
+
+            });
+        }
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header" th:include="navbar::navbarHeader">
+
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse" th:include="menu::sizeMenu">
+
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">添加组织项</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="col-xs-5">
+                        <div class="row">
+                            <div class="form-inline">
+                                <div class="form-group">
+                                    <label>类别：</label>
+                                    <select id="categoryId" style="width:160px" class="form-control input-sm">
+                                        <option th:value="${option.id}" th:text="${option.name}" th:each="option:${options}">?</option>
+                                    </select>
+                                    <label>操作</label>
+                                    <select id="select_operator" style="width:120px" class="form-control input-sm">
+                                        <option value="add">添加</option>
+                                        <option value="edit">编辑</option>
+                                        <option value="delete">删除</option>
+                                    </select>
+                                    <button id="btnAddCateogry" class="btn btn-sm" data-toggle="modal" data-target="#myModal">添加分类</button>
+                                </div>
+                            </div>
+                        </div>  
+                        <hr/>
+                        <ul id="tt" class="easyui-tree"></ul>
+                    </div>
+                    <div class="col-xs-7">
+                        <form id="form1" class="form-horizontal">
+                            <input type="hidden" id ="hide_id" name="hide_id" value="0" />
+                            <input type="hidden" id="hide_parentId" value="0" />
+                            <input type="hidden" name="hide_action" />
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">上级节点：</label>
+                                <div class="col-sm-10">
+                                    <p class="form-control-static" id="parent_text">
+                                        作为顶级节点
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">名称：</label>
+                                <div class="col-sm-4">
+                                    <input type="text" id="name" name="name" class="form-control input-sm" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">说明：</label>
+                                <div class="col-sm-10">
+                                    <textarea class="form-control input-sm" id="summary" name="summary" rows="8"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-2 col-sm-10">
+                                    <button id="btnSubmit" type="button" class="btn btn-default">保存数据</button>
+                                    <button id="btnEdit" type="button" class="btn btn-default" disabled="disabled">保存编辑</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">添加分类</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">名称：</label>
+                            <div class="col-sm-8">
+                                <input type="text" id="txtName" class="form-control input-sm" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">列表：</label>
+                            <div class="col-sm-8">
+                                <table class="table table-bordered table-condensed">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:60px">编号</th>
+                                            <th>名称</th>
+                                            <th style="width:60px">删除</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody1">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" id="btnSaveCategory" class="btn btn-primary">保存数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="../../js/jsrender.js"></script>
+    <script src="js/jsrender.js"></script>
+    <script type="text/x-jsrender" id="template1">
+        <option value="0">选择分类</option>
+        {{for items}}
+        <option value="{{:id}}">{{:name}}</option>
+        {{/for}}
+    </script>
+    <script type="text/x-jsrender" id="template2">
+        {{for items}}
+        <tr>
+            <td style="width:60px">{{:id}}</td>
+            <td>{{:name}}</td>
+            <td style="width:60px">
+                <a href="javascript:;" onclick="doDelete('{{:id}}')">删除</a>
+            </td>
+        </tr>
+        {{/for}}
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#select_operator").change(function (e) {
+                var o = $(this).val();
+                if (o == "add") {
+                    $("#btnSubmit").prop("disabled", false);
+                    $("#btnEdit").prop("disabled", true);
+                }
+                if (o == "edit") {
+                    var selectedNode = $("#tt").tree("getSelected");
+                    if (selectedNode == null) {
+                        alert("请选择要编辑的节点");
+                        $('#select_operator').val("add");
+                        return false;
+                    }
+                    $.get("/MyWebProject/api/organization/get_data/" + selectedNode.id, function (result) {
+                        if (result != null) {
+                            if (result.parent_text == null) {
+                                $("#parent_text").text("作为顶级分类");
+                            } else {
+                                $("#parent_text").text(result.parent_text);
+                            }
+                            $("#hide_id").val(result.map.id);
+                            $("#hide_parentId").val(result.map.parent_id);
+                            $("#name").val(result.map.name);
+                            $("#summary").val(result.map.summary);
+                        }
+                    })
+                    $("#btnSubmit").prop("disabled", true);
+                    $("#btnEdit").prop("disabled", false);
+                }
+                if (o == "delete") {
+                    var selectedNode = $("#tt").tree("getSelected");
+                    if (selectedNode == null) {
+                        alert("请选择要删除的节点");
+                        $('#select_operator').val("add");
+                        return false;
+                    }
+                    if (confirm("确定要删除此节点吗？")) {
+                        var hasChild = $("#tt").tree("isLeaf", selectedNode.target);
+                        if (hasChild == false) {
+                            alert("请先删除子节点");
+                            return false;
+                        }
+                        $.get("/MyWebProject/api/organization/delete/" + selectedNode.id, function (result) {
+                            if (result > 0) {
+                                $("#tt").tree("remove", selectedNode.target);
+                                $("#parent_text").text("作为顶级节点");
+                                $("#hide_parentId").val("0");
+                                $("#name").val("");
+                                $("#summary").val("");
+                                $("#btnSubmit").prop("disabled", false);
+                                $("#btnEdit").prop("disabled", true);
+                                alert("节点删除成功");
+                            }
+                        })
+                    }
+
+                }
+            })
+            $("#btnEdit").click(function () {
+                if ($("#name").val() == "") {
+                    alert("请输入名称");
+                    $("#name").focus();
+                    return false;
+                }
+                var categoryId = $("#categoryId").val();
+                var name = $("#name").val();
+                var summary = $("#summary").val();
+                var parentId = $("#hide_parentId").val();
+                var id = $("#hide_id").val();
+                var data = {
+                    id: id,
+                    name: name,
+                    summary: summary,
+                    categoryId: categoryId,
+                    parentId: parentId
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/organization/update",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result > 0) {
+                            var selectedNode = $("#tt").tree("getSelected");
+                            if (selectedNode) {
+                                $("#tt").tree("update", {
+                                    target: selectedNode.target,
+                                    text: name
+                                });
+                                $("#hide_id").val("0");
+                                $("#name").val("");
+                                $("#summary").val("");
+                                $("#btnSubmit").prop("disabled", false);
+                                $("#btnEdit").prop("disabled", true);
+                                $("#parent_text").text(selectedNode.text);
+                                $("#hide_parentId").val(selectedNode.id);
+                                $("#select_operator").val("add");
+                            }
+                        }
+                    }
+
+                })
+            })
+            $("#btnSubmit").click(function () {
+                if ($('#categoryId').val() == "0") {
+                    alert("请选择分类");
+                    $("#categoryId").focus();
+                    return false;
+                }
+                if ($("#name").val() == "") {
+                    alert("请输入名称");
+                    $("#name").focus();
+                    return false;
+                }
+                var categoryId = $("#categoryId").val();
+                var name = $("#name").val();
+                var summary = $("#summary").val();
+                var parentId = $("#hide_parentId").val();
+                var data = {
+                    name: name,
+                    summary: summary,
+                    categoryId: categoryId,
+                    parentId: parentId
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/organization/save",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        var t = $("#tt");
+                        var node = t.tree("getSelected");
+                        t.tree("append", {
+                            parent: (node ? node.target : null),
+                            data: result
+                        });
+                        $("#name").val("");
+                        $("#summary").val("");
+                    }
+                })
+
+            });
+            $('#myModal').on('hidden.bs.modal', function (e) {
+                $("#txtName").val("");
+                loadCategory();
+            });
+            $("#myModal").on("show.bs.modal", function (e) {
+                loadCategory();
+            })
+            $("#btnSaveCategory").click(function () {
+                if ($("#txtName").val() == "") {
+                    alert("请输入分类名称");
+                    return false;
+                }
+                var data = {
+                    name: $("#txtName").val()
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/organization/savecategory",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result > 0) {
+                            $.get("/MyWebProject/api/organization/getCategories", function (result) {
+                                if (result != null) {
+                                    $("#categoryId").empty;
+                                    var d = { items: result };
+                                    var html = $("#template1").render(d);
+                                    $("#categoryId").html(html);
+                                }
+                            })
+                        }
+                    }
+                })
+                $('#myModal').modal('hide')
+            })
+        });
+        function loadCategory() {
+            $.get("/MyWebProject/api/organization/getCategories", function (result) {
+                if (result != null) {
+                    $("#tbody1").empty;
+                    var d = { items: result };
+                    var html = $("#template2").render(d);
+                    $("#tbody1").html(html);
+                }
+            })
+        };
+        function doDelete(id) {
+            $.ajax({
+                type: "get",
+                url: "/MyWebProject/api/organization/deleteCategory/" + id,
+                success: function (result) {
+                    if (result > 0) {
+                        loadCategory();
+                    }
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>

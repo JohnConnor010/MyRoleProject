@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>规则模型</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet" />
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">规则模型管理系统</a>
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="sidebar-search">
+                <div class="input-group custom-search-form">
+                    <input type="text" class="form-control" placeholder="Search..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </li>
+            <li>
+                <a href="home"><i class="fa fa-dashboard fa-fw"></i> 主页</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 项管理<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="add_item">添加其他项</a>
+                    </li>
+                    <!--<li>
+                    	<a href="add_organization">添加组织项</a>
+                    </li>-->
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-wrench fa-fw"></i> 规则管理<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="add_rule">添加规则</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+            </div>
+        </nav>
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">主页</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="container">
+                    <h2>添加规则使用说明：</h2>
+<h5>1.先选择规则组名，组名的意思是这条规则能代表什么。如果没有组名点击后面的按钮可以添加组名，编辑组名按钮可以对组名的修改和删除操作。</h5>
+<h5>2.选择完组名后选择选项，接着选择逻辑符选择完逻辑符后逻辑内容会在表达式文本框中显示出来，默认逻辑符是加(+)逻辑符.</h5>
+<h5>3.当规则需要后缀时请先选择逻辑符在选中后缀前面的复选框，表示是加后缀还是或后缀，如果要自定义后缀请输入后缀名后点击添加后缀按钮，
+新添加的后缀就会在下面显示。</h5>
+<h5>4.当规则需要自定义项时，请先选择逻辑符后再选中自定义前面的复选框，自定义就会追加的规则表达式的后面，如果需要自定义项，请输入自
+定义文字后点击添加自定义按钮，新添加的自定义项就会显示在下面。</h5>
+<h5>5.如果要清空规则表达式，请点击表达式文本域下面的新建并清空按钮，此时进入新建规则状态并把以前的规则清空。</h5>
+<h5>6.点击保存数据按钮将会把生成的规则保存到数据库中。</h5>
+<h5>7.点击删除连接可以删除此条规则。</h5>
+<h5>8.点击连接后表达式将会显示在表达式文本域中，此时选择逻辑符然后再选择“选项”，如果规则表达式中包含后缀或者自定义，当再次选择
+后缀或自定义时新的表达式将会去掉后缀或自定义。</h5>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
+

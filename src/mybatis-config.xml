@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://112.230.205.198:3306/data"/>
+        <property name="username" value="duxcms"/>
+        <property name="password" value="szpdOwRBK5g3"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <mappers>
+  	<mapper class="com.mybatis.mapper.CategoryMapper"/>
+  	<mapper class="com.mybatis.mapper.ExtensionMapper"/>
+  	<mapper class="com.mybatis.mapper.CustomizeMapper"/>
+  	<mapper class="com.mybatis.mapper.RuleGroupMapper"/>
+  	<mapper class="com.mybatis.mapper.RulesMapper"/>
+      <mapper class="com.mybatis.mapper.ModelItemMapper"/>
+  </mappers>
+</configuration>

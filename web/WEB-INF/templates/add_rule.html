@@ -1,0 +1,972 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>添加模型</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="dist/css/sweet-alert.css" rel="stylesheet" />
+    <script src="js/sweet-alert.js"></script>
+    <script src="../../js/sweet-alert.js"></script>
+    <script>
+        /*<![CDATA[*/
+        var ziduan = new Array();
+        function init_ziduan() {
+            $("#ddlRuleItem option").each(function (index, element) {
+                if (element.value != "") {
+                    ziduan[element.value] = element.text;
+                }
+            })
+        }
+        var shuzu = new Array();
+        var yincang_yu = new Array();
+        var yincang_str = "";
+        var i = 0;
+        var temp = "";
+        var type = "+";
+        $(function () {
+
+            var array = new Array();
+            $("#ddlRuleItem").change(function () {
+                if ($('#ddlRuleItem').val() == "") {
+                    alert('请选择选项');
+                    return;
+                }
+                //$("#ddlOperator").prop("selectedIndex", 0);
+                //$("#ddlRuleItem").prop("disabled", true);
+                //$("#ddlOperator").prop("disabled", false);
+                if ($("#ddlRuleItem").val() == "cust") {
+                    $("#hide_row").show();
+                }
+                if (type == '+') {
+                    temp = $('#ddlRuleItem').val();
+                    var map = new Array();
+                    map[0] = ziduan[temp];
+                    shuzu.push(map);
+                    //隐藏域
+                    var _map = new Array();
+                    _map[0] = temp;
+                    yincang_yu.push(_map);
+                } else if (type == '|') {
+                    temp = $('#ddlRuleItem').val();
+                    shuzu[shuzu.length - 1][shuzu[shuzu.length - 1].length] = ziduan[temp];
+                    //隐藏域
+                    yincang_yu[yincang_yu.length - 1][yincang_yu[yincang_yu.length - 1].length] = temp;
+                } else {
+                    alert("请选择操作符");
+                    return;
+                }
+                rule_kuang();
+                yincang_fun();
+
+            });
+            $("#ddlOperator").change(function () {
+                type = $(this).val();
+                temp = "";
+                //$("#ddlRuleItem").prop("selectedIndex", 0);
+                //$("#ddlRuleItem").prop("disabled", false);
+                //$("#ddlOperator").prop("disabled", true);
+                
+
+            })
+            $("#btnClear").click(function () {
+                shuzu.length = 0;
+                yincang_yu.length = 0;
+                yincang_str = "";
+                $("#rule").val("");
+                $("#hide_rule").val("");
+                //$("#ddlRuleItem").prop("selectedIndex", 0);
+                $("#chk_extension").prop("checked", false);
+                $("#chk_cust").prop("checked", false);
+                $("#hide_action").val("save");
+                //$("#ddlRuleItem").prop("disabled", false);
+                //$("#ddlOperator").prop("disabled", true);
+            })
+
+        });
+        function rule_kuang() {
+            var da_geshu = 0;
+            var neirong = ""
+            var neirong_temp = "";
+            while (da_geshu < shuzu.length) {
+                neirong_temp = shuzu[da_geshu].join('|');
+                if (shuzu[da_geshu].length > 1) {
+                    neirong_temp = '(' + neirong_temp + ')';
+                }
+                if (da_geshu == 0) {
+                    neirong = neirong_temp;
+                } else {
+                    neirong = neirong + "+" + neirong_temp;
+                }
+                da_geshu = da_geshu + 1;
+            }
+            $('#rule').val('');
+            $('#rule').val(neirong);
+            yincang_fun();
+        }
+
+        function yincang_fun() {
+            var da_geshu = 0;
+            var neirong = ""
+            var neirong_temp = "";
+            while (da_geshu < shuzu.length) {
+                neirong_temp = yincang_yu[da_geshu].join('|');
+                if (yincang_yu[da_geshu].length > 1) {
+                    neirong_temp = '(' + neirong_temp + ')';
+                }
+                if (da_geshu == 0) {
+                    neirong = neirong_temp;
+                } else {
+                    neirong = neirong + "+" + neirong_temp;
+                }
+                da_geshu = da_geshu + 1;
+            }
+            yincang_str = neirong;
+            $("#hide_rule").val(yincang_str);
+            $("#hide_shuzu").val(JSON.stringify(shuzu));
+            $("#hide_yinchangyu").val(JSON.stringify(yincang_yu));
+            $("#hide_yinchangstr").val(yincang_str);
+        }
+        /*]]>*/
+    </script>
+</head>
+<body onload="init_ziduan()">
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">规则模型管理系统</a>
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Search..." />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="home"><i class="fa fa-dashboard fa-fw"></i> 主页</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 项管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="add_item">添加其他项</a>
+                                </li>
+                                <!--<li>
+                                    <a href="add_organization">添加组织项</a>
+                                </li>-->
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-wrench fa-fw"></i> 模型管理<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="add_rule">添加模型</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <h3><a href="shuoming.html">模型说明</a></h3>
+                    <h1 class="page-header">添加模型</h1>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form id="form1" class="form-horizontal" method="post" action="add_rule">
+                        <input type="hidden" id="hide_shuzu" name="hide_shuzu" />
+                        <input type="hidden" id="hide_yinchangyu" name="hide_yinchangyu" />
+                        <input type="hidden" id="hide_yinchangstr" name="hide_yinchangstr" />
+                        <input type="hidden" id="hide_action" name="hide_action" value="save" />
+                        <input type="hidden" id="hide_editId" name="hide_editId" value="0" />
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">模型名称：</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-3" id="div_select">
+                                        <select id="ddlGroup" name="ddlGroup" class="form-control input-sm">
+                                            <option th:value="${group.id}" th:each="group:${groups}" th:text="${group.name}">选择名称</option>                                            
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <button id="btnAddGroupName" type="button" class="btn btn-sm" data-toggle="modal" data-target="#myModal">新建模型</button>
+                                        <button id="btnEditGroupName" type="button" class="btn btn-sm" data-toggle="modal" data-target="#myModal1">编辑模型</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">选项：</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <select id="ddlRuleItem" class="form-control input-sm">
+                                            <option th:value="${option.code}" th:text="${option.name}" th:each="option:${options}">选择项</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <div class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">逻辑符：</label>
+                                                <div class="col-sm-3">
+                                                    <select id="ddlOperator" class="form-control input-sm">
+                                                        <option value="">选择逻辑符</option>
+                                                        <option value="+">加（+）</option>
+                                                        <option value="|">或（|）</option>
+                                                    </select>
+                                                </div>
+                                                <!--<label class="col-sm-2 control-label">省略符：</label>
+                                                <div class="col-sm-3">
+                                                    <select id="ddlOmission" class="form-control input-sm">
+                                                        <option value="">选择省略符</option>
+                                                        <option value="/">前省略（/）</option>
+                                                        <option value="\">后省略（\）</option>
+                                                    </select>
+                                                </div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group" id="hide_row" style="display:none">
+                            <label class="col-sm-2 control-label">自定义项：</label>
+                            <div class="col-sm-4">
+                                <div class="input-group">
+                                    <input type="text" id="cust_name" class="form-control" placeholder="" />
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" id="btnOK_Hide" type="button">确定并隐藏</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">
+                                <input type="checkbox" id="chk_extension"/> 后缀：
+                            </label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtExtensionName" class="form-control input-sm" />
+                                        <input type="hidden" id="hide_extensionId" value="0" />
+                                    </div>
+                                    <button id="btnAddExtension" type="button" class="btn btn-sm">添加后缀</button>
+                                    <button id="btnEditExtension" type="button" class="btn btn-sm" style="display:none">修改后缀</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10" id="extension_list">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">
+                                <input type="checkbox" id="chk_cust"/>自定义：
+                            </label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-4">
+                                        <input type="text" id="txtCustName" class="form-control input-sm" />
+                                    </div>
+                                    <button id="btnAddCust" type="button" class="btn btn-sm" data-operating="add" data-myId="0">添加自定义项</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10" id="cust_list">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则：</label>
+                            <div class="col-sm-10">
+                                <input type="hidden" id="hide_rule" name="hide_rule" value="" />
+                                <textarea class="form-control input-sm" id="rule" name="rule" rows="4" readonly="readonly"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input type="submit" class="btn btn-default" value="保存数据" />
+                                <button id="btnClear" type="button" class="btn btn-default">新建并清空</button>
+                                
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则列表：</label>
+                            <div class="col-sm-10">
+                                <table class="table table-bordered">
+                                    <caption id="output_div" class="alert alert-success" style="display:none"></caption>
+                                    <thead>
+                                        <tr>
+                                            <th style="width:60px;text-align:center">编号</th>
+                                            <th>规则</th>
+                                            <th style="width:80px;text-align:center">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbody">
+                                        
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">添加组名</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">分组名称</label>
+                            <div class="col-sm-5">
+                                <input type="text" id="group_name" class="form-control input-sm" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnSave" class="btn btn-primary">保存数据</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="myModal1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title" id="myModalLabel">编辑组名</h4>
+                </div>
+                <div class="modal-body">
+                    <!--<ul class="list-group">
+                        <li class="list-group-item" id="item1" contenteditable="true" onblur="group_item_blur(1);">
+                            <span>
+                                <span class="pull-right" contenteditable="false" onclick="group_item_delete(1);">
+                                    <a href="javascript:;">删除</a>
+                                </span> 
+                                Cras justo odio
+                            </span>
+                                                       
+                        </li>
+                    </ul>-->
+                    <table class="table table-condensed table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;text-align:center">编号</th>
+                                <th>名称</th>
+                                <th style="width:120px;text-align:center">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my_tbody">
+                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="js/jsrender.js"></script>
+    <script src="js/jquery.form.js"></script>
+    <script src="../../js/jquery.form.js"></script>
+    <script type="text/x-jsrender" id="template1">
+        {{for items}}
+        <div style="width:160px;float:left">
+            <p style="width:160px">
+            <a href="javascript:;" onclick="edit_extension({{:id}})">{{:name}}</a>
+            &nbsp;&nbsp;<a href="javascript:;" onclick="delete_extension({{:id}})">删除</a></p>
+        </div>
+        {{/for}}
+    </script> 
+    <script type="text/x-jsrender" id="template2">
+        {{for items}}
+        <div style="width:160px;float:left">
+            <p style="width:160px">
+                <a href="javascript:;" onclick="edit_customize(this,{{:id}})">{{:name}}</a>
+                &nbsp;&nbsp;<a href="javascript:;" onclick="delete_customize({{:id}})">删除</a>
+            </p>
+        </div>
+        {{/for}}
+    </script>  
+    <script type="text/x-jsrender" id="template3">
+        <option value="0">选择组名</option>
+        {{for items}}
+        <option value="{{:id}}">{{:name}}</option>
+        {{/for}}
+    </script> 
+    <script type="text/x-jsrender" id="template4">
+        {{for items}}
+        <tr>
+            <td>{{:id}}</td>
+            <td>{{:rule_expression}}</td>
+            <td>
+                <a href="javascript:;" onclick="edit_rule({{:id}})">编辑</a>
+                <a href="javascript:;" onclick="delete_rule({{:id}})">删除</a>
+            </td>
+        </tr>
+        {{/for}}
+    </script>
+    <script type="text/x-jsrender" id="template5">
+        {{for items}}
+        <tr>
+            <td style="text-align:center">{{:id}}</td>
+            <td id="item_{{:id}}" contenteditable="true">{{:name}}</td>
+            <td style="text-align:center">
+                <a href="javascript:;" onclick="saveEditGroupName({{:id}})">保存</a>
+                <a href="javascript:;" onclick="deleteGroupName({{:id}})">删除</a>
+            </td>
+        </tr>
+        {{/for}}
+    </script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        $(function () {
+            $("#btnEditExtension").click(function () {
+                var hide_id = $("#hide_extensionId").val();
+                var groupId = $("#ddlGroup").val();
+                if ($("#ddlGroup").val() == "0") {
+                    swal("请选择分组名称");
+                    $("#ddlGroup").focus();
+                    return false;
+                }
+                if ($("#txtExtensionName").val() == "") {
+                    swal("请输入后缀名称");
+                    $("#txtExtensionName").focus();
+                    return false;
+                }
+                var data = {
+                    id: hide_id,
+                    parent_id: 0,
+                    summary: "",
+                    group_id: $("#ddlGroup").val(),
+                    name: $("#txtExtensionName").val()
+                }
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/rule/update/extension",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result == 1) {
+                            $("#btnAddExtension").show();
+                            $("#btnEditExtension").hide();
+                            $("#hide_extensionId").val("0");
+                            $("#txtExtensionName").val("");
+                            loadExtension(groupId);
+                        }
+                    }
+                })
+            })
+            $("#ddlGroup").change(function () {
+                var val = $(this).val();
+                if (val != "0") {
+                    loadExtension(val);
+                    loadCustomize(val);
+                    loadRule(val);
+                    shuzu.length = 0;
+                    yincang_yu.length = 0;
+                    yincang_str = "";
+                    $("#rule").val("");
+                    $("#hide_rule").val("");
+                    //$("#ddlRuleItem").prop("selectedIndex", 0);
+                    $("#chk_extension").prop("checked", false);
+                    $("#chk_cust").prop("checked", false);
+                    $("#hide_action").val("save");
+                    //$("#ddlRuleItem").prop("disabled", false);
+                    //$("#ddlOperator").prop("disabled", true);
+                }
+            })
+            $("#btnAddExtension").click(function () {
+                if ($("#ddlGroup").val() == "0") {
+                    swal("请选择分组名称");
+                    $("#ddlGroup").focus();
+                    return false;
+                }
+                if ($("#txtExtensionName").val() == "") {
+                    swal("请输入后缀名称");
+                    $("#txtExtensionName").focus();
+                    return false;
+                }
+                var data = {
+                    group_id: $("#ddlGroup").val(),
+                    name: $("#txtExtensionName").val()
+                }
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/rule/save/extension",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result == 1) {
+                            $("#txtExtensionName").val("");
+                            loadExtension($("#ddlGroup").val());
+                        }
+                    }
+                })
+            });
+            $("#chk_extension").click(function () {
+                var chkStatus = $("#chk_extension").is(":checked");
+                var extension_txt = $("#ddlGroup option:selected").text().trim() + "后缀";
+                var extension_val = "extension_" + $("#ddlGroup").val();
+                if (chkStatus == true && $("#ddlGroup").val() != "0") {
+
+                    if (type == "+") {
+                        shuzu.push(new Array(extension_txt));
+                        yincang_yu.push(new Array(extension_val));
+                    }
+
+                    if (type == "|") {
+                        if (shuzu.length == 0) {
+                            shuzu[0] = new Array();
+                            shuzu[0].push(new Array(extension_txt));
+                            yincang_yu[0] = new Array();
+                            yincang_yu[0].push(new Array(extension_val));
+                        } else {
+                            shuzu[shuzu.length - 1].push(new Array(extension_txt));
+                            yincang_yu[yincang_yu.length - 1].push(new Array(extension_val));
+                        }
+                        
+                    }
+                    rule_kuang();
+                } else {
+                    for (var i = 0; i < shuzu.length; i = i + 1) {
+                        for (var j = 0; j < shuzu[i].length; j = j + 1) {
+                            if (shuzu[i][j] == extension_txt) {
+                                if (shuzu[i].length == 1) {
+                                    shuzu.splice(i, 1);
+                                    break;
+                                } else {
+                                    shuzu[i].splice(j, 1);
+                                }
+                            }
+                        }
+                    }
+                    for (var i = 0; i < yincang_yu.length; i = i + 1) {
+                        for (var j = 0; j < yincang_yu[i].length; j = j + 1) {
+                            if (yincang_yu[i][j] == extension_val) {
+                                if (yincang_yu[i].length == 1) {
+                                    yincang_yu.splice(i, 1);
+                                    break;
+                                } else {
+                                    yincang_yu[i].splice(j, 1);
+                                }
+                            }
+                        }
+                    }
+                    rule_kuang();
+                }
+            });
+            $("#chk_cust").click(function () {
+                var chkStatus = $("#chk_cust").is(":checked");
+                var extension_txt = $("#ddlGroup option:selected").text().trim() + "自定义";
+                var extension_val = "cust_" + $("#ddlGroup").val();
+                if (chkStatus == true && $("#ddlGroup").val() != "0") {
+
+                    if (type == "+") {
+                        shuzu.push(new Array(extension_txt));
+                        yincang_yu.push(new Array(extension_val));
+                    }
+
+                    if (type == "|") {
+                        if (shuzu.length == 0) {
+                            shuzu[0] = new Array();
+                            shuzu[0].push(new Array(extension_txt));
+                            yincang_yu[0] = new Array();
+                            yincang_yu[0].push(new Array(extension_val));
+                        } else {
+                            shuzu[shuzu.length - 1].push(new Array(extension_txt));
+                            yincang_yu[yincang_yu.length - 1].push(new Array(extension_val));
+                        }
+                        
+                        
+                    }
+                    rule_kuang();
+                } else {
+                    for (var i = 0; i < shuzu.length; i = i + 1) {
+                        for (var j = 0; j < shuzu[i].length; j = j + 1) {
+                            if (shuzu[i][j] == extension_txt) {
+                                if (shuzu[i].length == 1) {
+                                    shuzu.splice(i, 1);
+                                    break;
+                                } else {
+                                    shuzu[i].splice(j, 1);
+                                }
+                            }
+                        }
+                    }
+                    for (var i = 0; i < yincang_yu.length; i = i + 1) {
+                        for (var j = 0; j < yincang_yu[i].length; j = j + 1) {
+                            if (yincang_yu[i][j] == extension_val) {
+                                if (yincang_yu[i].length == 1) {
+                                    yincang_yu.splice(i, 1);
+                                    break;
+                                } else {
+                                    yincang_yu[i].splice(j, 1);
+                                }
+                            }
+                        }
+                    }
+                    rule_kuang();
+                }
+            });
+            $("#btnAddCust").click(function () {
+                if ($("#ddlGroup").val() == "0") {
+                    swal("请选择分组名称");
+                    $("#ddlGroup").focus();
+                    return false;
+                }
+                if ($("#txtCustName").val() == "") {
+                    swal("请输入自定义项");
+                    $("#txtCustName").focus();
+                    return false;
+                }
+                var operating = $(this).data("operating");
+                if (operating === "add") {
+                    var data = {
+                        name: $("#txtCustName").val(),
+                        groupId: $("#ddlGroup").val()
+                    };
+                    $.ajax({
+                        type: "post",
+                        url: "/MyWebProject/api/rule/cust/save",
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            if (result == 1) {
+                                loadCustomize($("#ddlGroup").val());
+                                $("#txtCustName").val("");
+                            }
+                        }
+                    })
+                }
+                if (operating === "edit") {
+                    var id = $(this).data("myId");
+                    var data = {
+                        id: id,
+                        name: $("#txtCustName").val(),
+                        groupId: $("#ddlGroup").val()
+                    };
+                    $.ajax({
+                        type: "post",
+                        url: "/MyWebProject/api/rule/cust/update",
+                        contentType: "application/json;charset=utf-8",
+                        dataType: "json",
+                        data: JSON.stringify(data),
+                        success: function (result) {
+                            if (result > 0) {
+                                loadCustomize($("#ddlGroup").val());
+                                $("#btnAddCust").text("添加自定义项");
+                                $("#btnAddCust").data("operating", "add");
+                                $("#txtCustName").val("");
+                            }
+                        }
+                    })
+                }
+            });
+            $('#myModal').on("hidden.bs.modal", function () {
+                $("#group_name").val("");
+            })
+            $("#btnSave").click(function () {
+                if ($("#group_name").val() == "") {
+                    swal("请输入分组名称");
+                    return false;
+                }
+                var data = {
+                    name: $("#group_name").val()
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/rule/group/save",
+                    contentType: "application/json;charset=utf-8",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result > 0) {
+                            swal("操作成功", "分组名称添加成功", "success");
+                            $('#myModal').modal('hide')
+                            loadGroup();
+                        }
+                    }
+                })
+            });
+            var options = {
+                target: "#output_div",
+                beforeSubmit: function (e) {
+                    if ($("#ddlGroup").val() == "0") {
+                        alert("请选择组名");
+                        $("#ddlGroup").focus();
+                        return false;
+                    }
+                    if ($("#rule").val() == "") {
+                        alert("请指定规则表达式");
+                        $("#rule").focus();
+                        return false;
+                    }
+                    
+                },
+                success: function (responseText, statusText, xhr, $form) {
+                    shuzu.length = 0;
+                    yincang_yu.length = 0;
+                    yincang_str = "";
+                    $("#rule").val("");
+                    $("#hide_rule").val("");
+                    $("#ddlRuleItem").prop("selectedIndex", 0);
+                    $("#chk_extension").prop("checked", false);
+                    $("#chk_cust").prop("checked", false);
+                    loadRule($("#ddlGroup").val());
+                    $("#hide_action").val("save");
+                    $("#output_div").fadeIn('slow', function () {
+                        $("#output_div").fadeOut('slow');
+                    });
+                },
+            };
+            $("#form1").submit(function () {
+                $(this).ajaxSubmit(options);
+                return false;
+            });
+            $("#myModal1").on("shown.bs.modal", function () {
+                loadGroup();
+            })
+        });
+        function edit_rule(id) {
+            $.get("/MyWebProject/api/rule/getById/" + id, function (result) {
+                if (result != null) {
+                    shuzu = $.parseJSON(result.shuzu.toString());
+                    yincang_yu = $.parseJSON(result.yinchangyu.toString());
+                    $("#rule").val(result.rule_expression);
+                    $("#hide_action").val("edit");
+                    $("#hide_editId").val(result.id);
+                    var find_shuzu_index = find(shuzu, "后缀");
+                    if (result.rule_expression.indexOf("后缀") != -1) {
+                        $("#chk_extension").prop("checked", true);
+                    } else {
+                        $("#chk_extension").prop("checked", false);
+                    }
+                    var find_yincangyu_index = find(shuzu, "自定义");
+                    if (result.rule_expression.indexOf("自定义") != -1) {
+                        $("#chk_cust").prop("checked", true);
+                    } else {
+                        $("#chk_cust").prop("checked", false);
+                    }
+                }
+            })
+        }
+        function delete_rule(id) {
+            swal({
+                title: "确认信息",
+                text: "确定要删除此规则吗？",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonColor: "DD6B55",
+                confirmButtonText:"确定"
+            }, function () {
+                $.get("/MyWebProject/api/rule/deleteRules/" + id, function (result) {
+                    if (result > 0) {
+                        loadRule($("#ddlGroup").val());
+                    }
+                })
+            })
+            
+        }
+        function loadRule(groupId) {
+            $.get("/MyWebProject/api/rule/getRules/" + groupId, function (result) {
+                if (result != null) {
+                    $("#tbody").empty();
+                    var data = { items: result };
+                    var html = $("#template4").render(data);
+                    $("#tbody").html(html);
+                }
+            })
+        }
+        function loadGroup() {
+            $.get("/MyWebProject/api/rule/group/get", function (result) {
+                if (result != null) {
+                    $("#ddlGroup").empty();
+                    var data = { items: result };
+                    var html = $("#template3").render(data);
+                    $("#ddlGroup").html(html);
+                    $("#my_tbody").empty();
+                    var tbody_html = $("#template5").render(data);
+                    $("#my_tbody").html(tbody_html);
+                }
+            })
+        }
+        function loadCustomize(groupId) {
+            $.get("/MyWebProject/api/rule/cust/getall/" + groupId, function (result) {
+                if (result != null) {
+                    $("#cust_list").empty();
+                    var data = { items: result };
+                    var html = $("#template2").render(data);
+                    $("#cust_list").html(html);
+                }
+            })
+        }
+        function loadExtension(group_id) {
+            $.get("/MyWebProject/api/rule/get/extension/" + group_id, function (result) {
+                if (result != null) {
+                    $("#extension_list").empty();
+                    var data = { items: result };
+                    var html = $("#template1").render(data);
+                    $("#extension_list").html(html);
+                }
+            })
+        };
+        function delete_extension(id) {
+            swal({
+                title: "确认信息",
+                text: "确定要删除此后缀吗？",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText:"确定"
+            },
+            function () {
+                $.get("/MyWebProject/api/rule/delete/extension/" + id, function (result) {
+                    if (result == 1) {
+                        //swal("操作成功", "后缀删除成功", "success");
+                        loadExtension($("#ddlGroup").val());
+                    }
+                })
+            })
+            
+        }
+        function edit_extension(id) {
+            $.get("/MyWebProject/api/rule/get/extension/byid/" + id, function (result) {
+                $("#txtExtensionName").val(result.name);
+                $("#ddlGroup").val(result.group_id);
+                $("#btnAddExtension").hide();
+                $("#btnEditExtension").show();
+                $("#hide_extensionId").val(id);
+
+            })
+        }
+        function find(array, value) {
+            for (var i = 0; i < array.length; i++) {
+                for (var j = 0; j < array[i].length; j++) {
+                    if (array[i][j] == value) {
+                        return new Array(i, j);
+                    }
+                }
+            }
+            return -1;
+        }
+        function edit_customize(ele, id) {
+            $("#txtCustName").val(ele.text);
+            $("#btnAddCust").data("operating", "edit");
+            $("#btnAddCust").data("myId", id);
+            $("#btnAddCust").text("修改自定义");
+
+        }
+        function delete_customize(id) {
+            swal({
+                title: "确认信息",
+                text: "确定要删除此自定义项吗？",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定"
+            },
+            function () {
+                $.get("/MyWebProject/api/rule/cust/delete/" + id, function (result) {
+                    if (result > 0) {
+                        //swal("操作成功", "自定义项删除成功！", "success");
+                        loadCustomize($("#ddlGroup").val());
+                    }
+                })
+            });
+        };
+        function saveEditGroupName(id) {
+            var text = $("#item_" + id).text();
+            var data = {
+                id: id,
+                name: text
+            };
+            $.ajax({
+                type: "post",
+                url: "/MyWebProject/api/group/rulegroup/update",
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                data: JSON.stringify(data),
+                success: function (result) {
+                    if (result > 0) {
+                        swal("数据保存成功");
+                        loadGroup();
+                    }
+                }
+            })
+        };
+        function deleteGroupName(id) {
+            swal({
+                title: "确认信息",
+                text: "确定要删除此分组名称吗？此分组名称下面的规则将被一并删除",
+                type: "warning",
+                showCancelButton: true,
+                cancelButtonText: "取消",
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText:"确定"
+            }, function () {
+                $.get("/MyWebProject/api/group/rulegroup/delete/" + id, function (result) {
+                    if (result > 0) {
+                        loadGroup();
+                        loadRule(id);
+                    }
+                })
+            })
+        }
+        /*]]>*/
+    </script>
+
+</body>
+
+</html>

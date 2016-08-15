@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>规则模型</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header" th:include="navbar::navbarHeader">
+
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse" th:include="menu::sizeMenu">
+
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">添加项</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form id="form1" class="form-horizontal">
+                        <input type="hidden" id="hide_id" name="hide_id" value="0" />
+                        <input type="hidden" id="hide_parentId" value="0" />
+                        <input type="hidden" name="hide_action" />
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">规则组名：</label>
+                            <div class="col-sm-10">
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">选项：</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <select id="ddlRuleItem" class="form-control input-sm">
+                                            <option th:each="option : ${options}" th:value="${option.code}" th:text="${option.name}">??</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <div class="form-horizontal">
+                                            <div class="form-group">
+                                                <label class="col-sm-2 control-label">操作符：</label>
+                                                <div class="col-sm-3">
+                                                    <select id="ddlOperator" class="form-control input-sm" disabled="disabled">
+                                                        <option value="">选择操作符</option>
+                                                        <option value="+">加（+）</option>
+                                                        <option value="&amp;">或（&amp;）</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">说明：</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control input-sm" id="rule" name="rule" rows="4"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button id="btnSubmit" type="button" class="btn btn-default">保存数据</button>
+                                <button id="btnClear" type="button" class="btn btn-default">清空表达式</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+
+</body>
+
+</html>
+

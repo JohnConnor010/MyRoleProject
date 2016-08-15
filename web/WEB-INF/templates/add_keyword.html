@@ -1,0 +1,310 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>添加项关键字</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <link href="../../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet" />
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <script src="../../js/jsrender.js"></script>
+    <script src="js/jsrender.js"></script>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header" th:include="navbar::navbarHeader">
+
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse" th:include="menu::sizeMenu">
+
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <h3>
+                    <a href="javascript:window.history.go(-1)">返回</a>
+                </h3>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">添加关键词</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <form id="form1" class="form-horizontal" method="post">
+                        <input type="hidden" id="hide_itemId" th:value="${itemId}" />
+                        <input type="hidden" id="hide_count" value="1" /> 
+                        <input type="hidden" id="hide_editId" value="0" />
+                        <input type="hidden" id="hide_parentId" value="0" />                     
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">父节点：</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-sm-2" id="div_select1">
+                                        <select class="form-control input-sm" id="select1" onchange="select_change('1')">
+                                            <option th:each="option:${options}" th:value="${option.id}" th:text="${option.name}">item</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">操作</label>
+                            <div class="col-sm-2">
+                                <select id="operator" class="form-control input-sm">
+                                    <option value="add">添加</option>
+                                    <option value="edit" selected="selected">修改</option>
+                                    <option value="delete">删除</option>
+                                </select>
+                            </div>
+                        </div>                     
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">关键词：</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="keyword" name="keyword" placeholder="关键词" class="form-control input-sm" th:value="${item_code}" th:readonly="${readonly}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">说明：</label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control input-sm" id="summary" name="summary" rows="6" th:value="${item_summary}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="button" id="btnSubmit" class="btn btn-default" disabled="disabled">提交表单</button>
+                                <button type="button" id="btnModify" class="btn btn-default" disabled="disabled">修改表单</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script type="text/x-jsrender" id="template1">
+        <div class="col-sm-2" id="div_select{{:number}}">
+            <select class="form-control input-sm" name="select{{:number}}" id="select{{:number}}" onchange="select_change('{{:number}}')">
+                <option value="0">同级节点</option>
+                {{for items}}
+                <option value="{{:id}}">{{:name}}</option>
+                {{/for}}
+            </select>
+        </div>
+    </script>
+    <script type="text/javascript">
+        function resetToEditForm() {
+            $("#keyword").val("");
+            $("#summary").val("");
+            $("#operator option").eq("1").prop("selected", true);
+            $("#btnSubmit").prop("disabled", true);
+            $("#btnModify").prop("disabled", false);
+        }
+        function select_change(number) {
+            var id = $("#select" + number).val();
+            var itemId = $("#hide_itemId").val();
+            if (id != "0") {
+                $.get("/MyWebProject/api/cascading/findById/" + id + "/" + itemId , function (result) {
+                    if (result != "") {
+                        $("#div_select" + number).nextAll().empty();
+                        var count = parseInt(number) + 1;
+                        $("#hide_count").val(count);
+                        var data = { number: count, items: result };
+                        var html = $("#template1").render(data);
+                        $("#div_select" + number).after(html);
+                        $.get("/MyWebProject/api/keyword/find/" + id + "/" + itemId, function (resultData) {
+                            $("#hide_editId").val(resultData.id);
+                            $("#keyword").val(resultData.name);
+                            $("#summary").val(resultData.summary);
+                            $("#hide_parentId").val(resultData.parent_id);
+                            $("#btnModify").prop("disabled", false);
+                            $("#operator option").eq(1).prop("selected", true);
+                            $("#btnSubmit").prop("disabled", true);
+                        })
+                    } else {
+                        $.get("/MyWebProject/api/keyword/find/" + id + "/" + itemId, function (resultData) {
+                            $("#hide_editId").val(resultData.id);
+                            $("#keyword").val(resultData.name);
+                            $("#summary").val(resultData.summary);
+                            $("#hide_parentId").val(resultData.parent_id);
+                            $("#btnModify").prop("disabled", false);
+                            $("#operator option").eq(1).prop("selected", true);
+                            $("#btnSubmit").prop("disabled", true);
+                        })
+                        $("#hide_count").val(number);
+                        $("#div_select" + number).nextAll().empty();
+                    }
+                })
+            } else {
+                $("#hide_count").val(number);
+                $("#div_select" + number).nextAll().empty();
+                $("#btnModify").prop("disabled", true);
+                $("#keyword").val("");
+                $("#summary").val("");
+                $("#operator option").eq(0).prop("selected", true);
+                $("#btnSubmit").prop("disabled", false);
+
+            }
+
+        }
+        $(function () {
+            $("#btnSubmit").click(function () {
+                var parent_id = 0;
+                var current_select = $("#hide_count").val();
+                if (parseInt(current_select) > 1) {
+                    var currentSelectedValue = $("#select" + current_select).val();
+                    if (currentSelectedValue == "0") {
+                        var previousSelectedValue = $("#select" + (parseInt(current_select) - 1)).val();
+                        parent_id = parseInt(previousSelectedValue);
+                    } else {
+                        parent_id = parseInt($("#select" + current_select).val());
+                    }
+                } else {
+                    parent_id = parseInt($("#select1").val());
+                }
+                if ($("#keyword").val() == "") {
+                    alert("请输入关键词");
+                    return false;
+                }
+                var name = $("#keyword").val();
+                var summary = $("#summary").val();
+                var data = {
+                    name: name,
+                    parent_id: parent_id,
+                    summary: summary,
+                    itemId: $("#hide_itemId").val()
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/keyword/save",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        var number = $("#hide_count").val();
+                        var current_selected = $("#select" + current_select).val();
+                        if (current_selected == "0") {
+                            var option = new Option(result.name, result.id, false, false);
+                            $("#select" + current_select).append(option);
+                        } else {
+                            var data = { number: parseInt(number) + 1, items: result };
+                            var html = $("#template1").render(data);
+                            $("#div_select" + number).after(html);
+                            $("#hide_count").val(parseInt(number) + 1);
+                        }
+                        $("#keyword").val("");
+                        $("#summary").val("");
+                        $("#hide_editId").val("0");
+                        alert("关键字添加成功");
+                    }
+                })
+
+            });
+            $("#btnModify").click(function () {
+                if ($("#keyword").val() == "") {
+                    alert("请输入关键字");
+                    return false;
+                }
+                var id = $("#hide_editId").val();
+                var data = {
+                    id: id,
+                    name: $("#keyword").val(),
+                    summary: $("#summary").val(),
+                    parent_id: $("#hide_parentId").val(),
+                    itemId: $("#hide_itemId").val()
+                };
+                $.ajax({
+                    type: "post",
+                    url: "/MyWebProject/api/keyword/update/",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: JSON.stringify(data),
+                    success: function (result) {
+                        if (result > 0) {
+                            alert("更新成功");
+                            $("#hide_editId").val("0");
+                            $("#hide_parentId").val("0");
+                            $("#keyword").val("");
+                            $("#summary").val("");
+                            $("#btnModify").prop("disabled", true);
+                            $("#select1 option").eq(0).prop("selected", true);
+                            window.location.reload();
+                        }
+                    }
+                })
+            });
+            $("#operator").change(function () {
+                var oper = $(this).val();
+                if (oper == "add") {
+                    $("#keyword").val("");
+                    $("#summary").val("");
+                    $("#btnSubmit").prop("disabled", false);
+                    $("#btnModify").prop("disabled", true);
+                }
+                if (oper == "edit") {
+                    if ($("#hide_editId").val() != "0") {
+                        $("#btnSubmit").prop("disabled", true);
+                        $("#btnModify").prop("disabled", false);
+
+                    } else {
+                        $("#btnSubmit").prop("disabled", true);
+                        $("#btnModify").prop("disabled", true);
+                    }
+                    
+                }
+                if (oper == "delete") {
+                    $("#btnSubmit").prop("disabled", true);
+                    $("#btnModify").prop("disabled", true);
+                    var itemId = $("#hide_itemId").val();
+                    var editId = $("#hide_editId").val();
+                    if (editId == "0") {
+                        alert("请选择要删除的选项");
+                        return false;
+                    }
+                    if (confirm("确定要删除此选择项吗？")) {
+                        $.get("/MyWebProject/api/keyword/getChildCount/" + editId + "/" + itemId, function (result) {
+                            if (result > 0) {
+                                alert("此节点下有子节点，请先删除子节点！");
+                                return false;
+                            } else {
+                                $.get("/MyWebProject/api/keyword/deleteById/" + editId + "/" + itemId, function (result) {
+                                    if (result > 0) {
+                                        alert("关键字删除成功");
+                                        $("#keyword").val("");
+                                        $("#summary").val("");
+                                        $("#operator option").eq(0).prop("selected", true);
+                                        $("#hide_editId").val("0");
+                                        $("#hide_parentId").val("0");
+                                        window.location.reload();
+                                    }
+                                })
+                            }
+                        })
+                    } else {
+                        $("#operator").val("edit");
+                        $("#btnSubmit").prop("disabled", true);
+                        $("#btnModify").prop("disabled", false);
+                    }
+                    
+                    
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
+

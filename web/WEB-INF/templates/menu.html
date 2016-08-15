@@ -1,0 +1,41 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="sizeMenu">
+        <ul class="nav" id="side-menu">
+            <li class="sidebar-search">
+                <div class="input-group custom-search-form">
+                    <input type="text" class="form-control" placeholder="Search..." />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </li>
+            <li>
+                <a href="home"><i class="fa fa-dashboard fa-fw"></i> 主页</a>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> 项管理<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="add_item">添加其他项</a>
+                    </li>
+                    <!--<li>
+                    	<a href="add_organization">添加组织项</a>
+                    </li>-->
+                </ul>
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-wrench fa-fw"></i>模型管理<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="add_rule">添加模型</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

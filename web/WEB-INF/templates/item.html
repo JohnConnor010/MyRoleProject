@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>添加其他项</title>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet"/>
+    <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header" th:include="navbar::navbarHeader">
+                
+            </div>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse" th:include="menu::sizeMenu">
+                    
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">添加项</h1>
+                </div>
+            </div>            
+            <div class="row">                
+                <div class="col-lg-12">
+                    <form id="form1" class="form-horizontal" method="post" action="add_item" onsubmit="return check_form();">
+                        <input type="hidden" name="hide_id" th:value="${id}" />
+                        <input type="hidden" name="hide_action" th:value="${action}" />
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">名称：</label>
+                            <div class="col-sm-4">
+                                <input type="text" id="name" name="name" class="form-control input-sm" th:value="${item_name}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">标记代码：</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="code" name="code" placeholder="标记代码会被用于表的名字用于创建数据表" class="form-control input-sm" th:value="${item_code}" th:readonly="${readonly}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">说明：</label>
+                            <div class="col-sm-5">
+                                <textarea class="form-control input-sm" id="summary" name="summary" th:value="${item_summary}"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <input type="submit" id="btnSubmit" class="btn btn-default" value="提交表单" />
+                                
+                            </div>
+                        </div>
+                    </form>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width:60px">编号</th>
+                                <th>名称</th>
+                                <th>标记代码</th>
+                                <th style="width:160px">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="result:${results}">
+                                <td th:text="${result.id}">?</td>
+                                <td th:text="${result.name}">?</td>
+                                <td th:text="${result.code}">?</td>
+                                <td>
+                                    <a th:href="@{add_item(action=edit,id=${result.id})}">编辑</a>
+                                    <a href="javascript:;" th:onclick="'doDelete(\'' + ${result.id} + '\');'">删除</a>
+                                    <a th:href="@{add_keyword(id=${result.id})}">添加关键词</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/metisMenu/dist/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#btnSubmit").click(function () {
+                if ($("#name").val() == "") {
+                    alert("请输入名称");
+                    return false;
+                }
+                if ($("#code").val() == "") {
+                    alert("请输入标记代码");
+                    return false;
+                }
+            })
+        })
+        function doDelete(id) {
+            if (confirm("确定要删除此项吗？")) {
+                $.ajax({
+                    type: "get",
+                    url: "/MyWebProject/api/delete_item/" + id,
+                    success: function (result) {
+                        if (result == "OK") {
+                            alert("数据删除成功");
+                            window.location.href = "add_item";
+                        } else {
+                            alert("数据删除失败");
+                        }
+
+                    }
+                })
+                
+            }
+            
+        }
+    </script>
+</body>
+
+</html>
